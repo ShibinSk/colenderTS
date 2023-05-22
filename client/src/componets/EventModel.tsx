@@ -2,8 +2,10 @@ import React, { useState, FormEvent, ChangeEvent, useEffect } from "react";
 import Modal from "react-modal";
 import Datetime from "react-datetime";
 import moment, { Moment } from "moment";
-import axios from "axios";
 
+import axios from "axios";
+import { log } from "console";
+let data: any[] = [];
 type Props = {
   isOpen: boolean;
   onClose: () => void;
@@ -29,7 +31,7 @@ function EventModel({ isOpen, onClose, onEventAdded }: Props) {
   const [title, setTitle] = useState("");
   const [start, setStart] = useState<Date>(new Date());
   const [end, setEnd] = useState<Date>(new Date());
-  const [evnet, setEvents] = useState("");
+  const [event, setEvents] = useState("");
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -64,11 +66,28 @@ function EventModel({ isOpen, onClose, onEventAdded }: Props) {
     }
   };
 
-  async function events() {
-    const response = await axios.get("http://localhost:5000/get-event");
-    setEvents(response.data);
-    console.log(response.data, "rrrr");
-  }
+ async function events() {
+  const response = await axios.get("http://localhost:5000/get-event");
+  setEvents(response.data);
+  console.log(response.data, "rrrr");
+}
+
+console.log(event, "evvvvvvvvvv");
+
+if (Array.isArray(event)) {
+   data= event.map((e:any) => {
+    return e.title;
+    
+  });
+}
+
+
+
+
+
+
+
+  
   useEffect(() => {
     events();
   }, []);
@@ -90,13 +109,16 @@ function EventModel({ isOpen, onClose, onEventAdded }: Props) {
         </div>
         <button type="submit">Submit</button>
       </form>
-
+{/* 
       <div>
-      
-   
-      </div>
-    </Modal>
+        <h3>Addedd Events</h3>
+      {data.map((e: string, index: number) => (
+        <li key={index}>{e}</li> 
+        ))}
+
+    </div> */}
+    </Modal> 
   );
-}
+}     
 
 export default EventModel;

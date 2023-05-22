@@ -1,9 +1,14 @@
 import React, { useState, useRef } from "react";
 import FullCalendar from "@fullcalendar/react"; // must go before plugins
 import dayGridPlugin from "@fullcalendar/daygrid"; // a plugin!
+import interactionPlugin from "@fullcalendar/interaction"; // needed for dayClick
 import EventModel from "./EventModel";
 import axios from "axios";
 import moment from "moment";
+import { el } from "@fullcalendar/core/internal-common";
+let data: any[] = [];
+let globalData: String[] = [];
+let datatitle: String[] = [];
 
 function Calendar(): JSX.Element {
   const [modalOpen, setModalOpen] = useState(false);
@@ -33,6 +38,38 @@ function Calendar(): JSX.Element {
     setEvents(response.data);
   }
 
+  async function handleClick(info: any) {
+    return events.map(async (data: any) => {
+      let date: Number = data.start.slice(0, 10);
+      console.log(date, "Is this Data");
+      let secondDate: Number = info.dateStr;
+
+      console.log(data);
+
+      if (date === secondDate) {
+        alert(data.title);
+      }
+    });
+
+    // if (Array.isArray(events)) {
+    //   data = events.map((e: any) => {
+    //     return e;
+    //   });
+    //   data.map((e: any, index: number) => globalData.push(e.start));
+    //   data.map((e: any, index: number) => datatitle.push(e.title));
+
+    //   console.log(datatitle, "heheeehh");
+    //   const dateOnly = globalData[0].slice(0, 10);
+    //   console.log(dateOnly, "dateOnly");
+
+    //   if (dateOnly === info.dateStr) {
+    //     alert(datatitle);
+    //   } else {
+    //     alert("Not Matching ")
+    //   }
+    // }
+  }
+
   return (
     <div>
       <button
@@ -44,13 +81,15 @@ function Calendar(): JSX.Element {
       </button>
       <div style={{ position: "relative", zIndex: 0 }}>
         <FullCalendar
-          plugins={[dayGridPlugin]}
+          plugins={[dayGridPlugin, interactionPlugin]}
           events={events}
           initialView="dayGridMonth"
           ref={calendarRef}
           eventAdd={(event) => handleEvent(event)}
           datesSet={(date) => handleDates(date)}
+          dateClick={(info) => handleClick(info)}
         />
+
         <EventModel
           isOpen={modalOpen}
           onClose={() => setModalOpen(false)}
